@@ -11,7 +11,12 @@ export interface Link {
   createdAt: string;
 }
 
-const API = 'http://localhost:3000';
+// Empty string → relative URLs (/api/links, /:code).
+// Works on any origin: Railway, Docker, local bundle (bun start).
+// For local ng-serve dev, start the Bun backend separately; the
+// browser will still reach it because ng serve proxies nothing by
+// default — just open the bundle on :3000 instead of :4200.
+const API = '';
 
 @Component({
   selector: 'app-root',
