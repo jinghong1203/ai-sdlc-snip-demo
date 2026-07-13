@@ -1,0 +1,90 @@
+﻿<div class="page">
+
+  <!-- ── Hero ───────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <h1 class="hero-title">Snip</h1>
+    <p class="hero-sub">Shorten any link in seconds</p>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Chat-style pill input -->
+    <form class="pill-form" (ngSubmit)="shorten()" autocomplete="off">
+      <div class="pill-row">
+        <input
+          class="pill-input"
+          type="url"
+          name="newUrl"
+          placeholder="Paste a URL to shorten…"
+          [(ngModel)]="newUrl"
+          [disabled]="loading"
+        />
+        <button
+          class="pill-btn"
+          type="submit"
+          [disabled]="loading || !newUrl.trim()"
+        >{{ loading ? '…' : 'Snip →' }}</button>
+      </div>
+    </form>
+
+    <!-- Success notice -->
+    @if (successUrl) {
+      <div class="notice notice-success">
+        Created —&nbsp;
+        <a class="notice-link" [href]="successUrl" target="_blank" rel="noopener noreferrer">
+          {{ successUrl }}
+        </a>
+      </div>
+    }
+
+    <!-- Error notice -->
+    @if (errorMsg) {
+      <div class="notice notice-error">{{ errorMsg }}</div>
+    }
+
+    <!-- Links card -->
+    @if (links.length > 0) {
+      <section class="card">
+        <h2 class="card-title">All links</h2>
+        <div class="table-wrap">
+          <table class="links-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Original URL</th>
+                <th>Short URL</th>
+                <th>Hits</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (link of links; track link.code) {
+                <tr>
+                  <td class="mono">{{ link.code }}</td>
+                  <td class="url-cell">
+                    <a class="link"
+                       [href]="link.url"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       [title]="link.url">{{ link.url }}</a>
+                  </td>
+                  <td>
+                    <a class="link link-accent"
+                       [href]="link.shortUrl"
+                       target="_blank"
+                       rel="noopener noreferrer">{{ link.shortUrl }}</a>
+                  </td>
+                  <td class="mono center">{{ link.hits }}</td>
+                  <td class="muted">{{ link.createdAt | date:'mediumDate' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+  </main>
+</div>
