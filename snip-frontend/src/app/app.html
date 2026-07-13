@@ -19,33 +19,33 @@
           name="newUrl"
           placeholder="Paste a URL to shorten…"
           [(ngModel)]="newUrl"
-          [disabled]="loading"
+          [disabled]="loading()"
         />
         <button
           class="pill-btn"
           type="submit"
-          [disabled]="loading || !newUrl.trim()"
-        >{{ loading ? '…' : 'Snip →' }}</button>
+          [disabled]="loading() || !newUrl.trim()"
+        >{{ loading() ? '…' : 'Snip →' }}</button>
       </div>
     </form>
 
     <!-- Success notice -->
-    @if (successUrl) {
+    @if (successUrl()) {
       <div class="notice notice-success">
         Created —&nbsp;
-        <a class="notice-link" [href]="successUrl" target="_blank" rel="noopener noreferrer">
-          {{ successUrl }}
+        <a class="notice-link" [href]="successUrl()" target="_blank" rel="noopener noreferrer">
+          {{ successUrl() }}
         </a>
       </div>
     }
 
     <!-- Error notice -->
-    @if (errorMsg) {
-      <div class="notice notice-error">{{ errorMsg }}</div>
+    @if (errorMsg()) {
+      <div class="notice notice-error">{{ errorMsg() }}</div>
     }
 
     <!-- Links card -->
-    @if (links.length > 0) {
+    @if (links().length > 0) {
       <section class="card">
         <h2 class="card-title">All links</h2>
         <div class="table-wrap">
@@ -60,7 +60,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (link of links; track link.code) {
+              @for (link of links(); track link.code) {
                 <tr>
                   <td class="mono">{{ link.code }}</td>
                   <td class="url-cell">

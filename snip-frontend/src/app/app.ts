@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -27,11 +27,16 @@ const API = '';
 export class App {
   private http = inject(HttpClient);
 
+  // Plain property — updated synchronously by ngModel (template events
+  // already trigger change detection in zoneless mode).
   newUrl = '';
-  links: Link[] = [];
-  errorMsg = '';
-  successUrl = '';
-  loading = false;
+
+  // Signals — Angular 22 zoneless change detection tracks these
+  // automatically, so HTTP callback updates are visible immediately.
+  links      = signal<Link[]>([]);
+  errorMsg   = signal('');
+  successUrl = signal('');
+  loading    = signal(false);
 
   constructor() {
     this.loadLinks();
@@ -39,7 +44,7 @@ export class App {
 
   loadLinks(): void {
     this.http.get<Link[]>(`${API}/api/links`).subscribe({
-      next: links => (this.links = links.slice().reverse()),
+      next: links => this.links.set(links.slice().reverse()),
       error: () => {},
     });
   }
@@ -47,20 +52,20 @@ export class App {
   shorten(): void {
     const url = this.newUrl.trim();
     if (!url) return;
-    this.errorMsg = '';
-    this.successUrl = '';
-    this.loading = true;
+    this.errorMsg.set('');
+    this.successUrl.set('');
+    this.loading.set(true);
 
     this.http.post<Link>(`${API}/api/links`, { url }).subscribe({
       next: link => {
-        this.successUrl = link.shortUrl;
+        this.successUrl.set(link.shortUrl);
         this.newUrl = '';
-        this.links.unshift(link);
-        this.loading = false;
+        this.links.update(prev => [link, ...prev]);
+        this.loading.set(false);
       },
       error: err => {
-        this.errorMsg = err.error?.error ?? 'Something went wrong';
-        this.loading = false;
+        this.errorMsg.set(err.error?.error ?? 'Something went wrong');
+        this.loading.set(false);
       },
     });
   }
