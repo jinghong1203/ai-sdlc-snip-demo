@@ -1,0 +1,4 @@
+node_modules/
+*.log
+# Angular project lives on the frontend branch only
+snip-frontend/
