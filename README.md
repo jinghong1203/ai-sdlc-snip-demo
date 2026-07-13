@@ -125,6 +125,40 @@ Set `SNIP_API=http://your-host:port` to target a non-local backend.
 
 ---
 
+## Bundle (production build)
+
+| Submodule  | Branch   | Contents                                                                          |
+|------------|----------|-----------------------------------------------------------------------------------|
+| `bundle/`  | `bundle` | **Generated.** `server.js` + `cli.js` + `public/` (Angular build) + `.env` + `Dockerfile` + `railway.json` |
+
+The `bundle` branch is **generated output — do not hand-edit.**
+
+### Rebuild
+
+```bash
+# Assemble + commit locally (no network writes)
+node scripts/build-bundle.mjs
+
+# Assemble + commit + push bundle branch and main
+node scripts/build-bundle.mjs --push
+```
+
+The script is a **safe no-op** when sources are unchanged: it skips commits if `git diff --cached` is empty in both `bundle/` and the superproject.
+
+### Deploy from bundle branch
+
+**Railway** — connect the `bundle` branch; `railway.json` selects the Dockerfile builder automatically.
+
+**Docker**
+```bash
+git clone -b bundle https://github.com/jinghong1203/ai-sdlc-snip-demo.git snip-bundle
+cd snip-bundle
+docker build -t snip .
+docker run -p 3000:3000 snip
+```
+
+---
+
 ## Submodule update workflow
 
 When a layer branch receives new commits, advance the superproject pointer:
